@@ -1,0 +1,8 @@
+﻿Tipo_Servico;Categoria_Servico;Preco_Base;ID_Servico
+Lavagem Simples;Padrão;50.0;1
+Lavagem Completa;Padrão;80.0;2
+Lavagem Motor;Especial;100.0;3
+Polimento Comercial;Estética;250.0;4
+Polimento Técnico;Estética;500.0;5
+Higienização Interna;Estética;350.0;6
+Vitrificação Pintura;Premium;1200.0;7

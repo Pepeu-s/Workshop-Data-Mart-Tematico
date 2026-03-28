@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 # Workshop-Data-Mart-Tematico
 
+=======
+>>>>>>> 97ccbaa (geração de dados raw)
 #  Projeto de Análise de Dados – Lava Jato
 
 ##  Visão Geral
@@ -168,7 +171,11 @@ A partir das análises, é possível:
 
 ---
 
+<<<<<<< HEAD
 ##  Conclusão
+=======
+## 🚀 Conclusão
+>>>>>>> 97ccbaa (geração de dados raw)
 
 Este projeto fornece uma base sólida para análise de dados em um lava jato, permitindo transformar dados operacionais em decisões estratégicas.
 

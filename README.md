@@ -172,13 +172,20 @@ A partir das análises, é possível:
 ---
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ##  Conclusão
 =======
 ## 🚀 Conclusão
 >>>>>>> 97ccbaa (geração de dados raw)
+=======
+##  Conclusão
+>>>>>>> fb87f61 (gerando os dados raw)
 
 Este projeto fornece uma base sólida para análise de dados em um lava jato, permitindo transformar dados operacionais em decisões estratégicas.
 
 Com a estrutura proposta, o negócio ganha visibilidade sobre seu desempenho e capacidade de agir de forma proativa para melhorar resultados.
 
 ---
+
+
+o

@@ -1,191 +1,131 @@
-<<<<<<< HEAD
-# Workshop-Data-Mart-Tematico
+Projeto de Análise de Dados: Data Mart Lava Jato
+Visão Geral
+Este projeto tem como objetivo estruturar um ambiente analítico completo para um lava jato, permitindo a extração de insights relevantes sobre faturamento, volume de serviços e comportamento ao longo do tempo. A solução parte da geração de dados brutos (mockados), passa por um pipeline ETL via Python e finaliza na construção de um banco de dados dimensional com Data Marts agregados.
 
-=======
->>>>>>> 97ccbaa (geração de dados raw)
-#  Projeto de Análise de Dados – Lava Jato
+Objetivos do Projeto
+Calcular o faturamento médio e total do lava jato ao longo do tempo.
 
-##  Visão Geral
+Identificar o desvio padrão do faturamento, destacando variações e instabilidades no caixa.
 
-Este projeto tem como objetivo estruturar um ambiente analítico para um lava jato, permitindo a extração de insights relevantes sobre faturamento, volume de serviços e comportamento ao longo do tempo.
+Detectar meses com baixa atividade (meses parados) e analisar a sazonalidade semanal.
 
-A solução utiliza modelagem dimensional com **schema Snowflake** e construção de **Data Marts**, possibilitando análises eficientes e escaláveis.
+Analisar o volume médio diário de carros lavados por mês.
 
----
+Apoiar decisões estratégicas para aumentar a receita e a eficiência operacional.
 
-##  Objetivos do Projeto
+Modelagem de Dados
+O projeto utiliza um modelo dimensional inspirado no Snowflake Schema, com separação clara entre fatos e dimensões.
 
-* Calcular o **faturamento médio** do lava jato
-* Identificar o **desvio padrão do faturamento**, destacando variações relevantes
-* Detectar **meses com baixa atividade (meses parados)**
-* Analisar o **volume médio diário de carros lavados por mês**
-* Apoiar decisões estratégicas para aumentar receita e eficiência operacional
+Granularidade: A granularidade da Tabela Fato é de um registro por serviço executado (1 linha = 1 serviço realizado em 1 carro, em 1 dia específico).
 
----
+Tabela Fato
+Fato_Lavagens: ID_Lavagem, ID_Carro, ID_Servico, ID_Tempo, Valor_Pago, Quantidade
 
-##  Modelagem de Dados
+Dimensões
+Dim_Carro: ID_Carro, Modelo, Marca, Categoria (Pequeno, Médio, Grande)
 
-O projeto utiliza um modelo dimensional no formato **Snowflake Schema**, com separação clara entre fatos e dimensões.
+Dim_Servico: ID_Servico, Tipo_Servico, Preco_Base, Categoria_Servico
 
-###  Tabela Fato
+Dim_Cliente: ID_Cliente, Nome_Cliente, Cidade, Estado, Tipo_Cliente
 
-**Fato_Lavagens**
+Dim_Tempo: ID_Tempo, Data, Dia, Mes, Ano, Dia_da_Semana, Fim_de_Semana (Gerada dinamicamente via ETL)
 
-* ID_Lavagem
-* ID_Carro
-* ID_Servico
-* ID_Tempo
-* Valor_Servico
-* Quantidade (geralmente 1 por lavagem)
+Pipeline ETL e Data Marts Agregados
+O pipeline foi construído em Python (Pandas e SQLAlchemy). Os dados transacionais brutos foram gerados via biblioteca Faker. Durante a fase de transformação, a Dim_Tempo foi extraída a partir das datas da tabela fato.
 
----
+Além do modelo base, o pipeline gera fisicamente no banco de dados (SQLite) os seguintes Data Marts agregados para facilitar a visualização:
 
-###  Dimensões
+dm_financeiro: Faturamento total, médio e desvio padrão agregados por mês.
 
-####  Dimensão Carro
+dm_operacional: Volume de serviços e receita cruzados por tipo de serviço e categoria do veículo.
 
-* ID_Carro
-* Modelo
-* Marca
-* Categoria (Pequeno, Médio, Grande)
+dm_temporal: Médias diárias calculadas mensalmente.
 
-####  Dimensão Serviço
+dm_sazonalidade_semanal: Volume de lavagens por dia da semana.
 
-* ID_Servico
-* Tipo de Serviço (Simples, Completa, Polimento, etc.)
-* Preço Base
-* Categoria de Serviço
+5 Perguntas de Negócio Resolvidas (Queries SQL)
+1. Qual é o faturamento total e o volume de lavagens por mês?
 
-####  Dimensão Tempo
-
-* ID_Tempo
-* Data
-* Dia
-* Mês
-* Ano
-* Nome do Mês
-* Dia da Semana
-* Indicador de Fim de Semana
-
----
-
-##  Estrutura Snowflake
-
-As dimensões podem ser normalizadas, por exemplo:
-
-* Dim_Carro → Dim_Marca
-* Dim_Tempo → Dim_Mês → Dim_Ano
-* Dim_Servico → Dim_Categoria_Servico
-
-Essa abordagem reduz redundância e melhora a consistência dos dados.
-
----
-
-##  Data Marts
-
-Serão criados Data Marts específicos para facilitar análises:
-
-###  Data Mart Financeiro
-
-* Faturamento por mês
-* Faturamento médio
-* Desvio padrão de faturamento
-
-###  Data Mart Operacional
-
-* Quantidade de carros lavados por dia
-* Média diária por mês
-* Volume por tipo de serviço
-
-###  Data Mart Temporal
-
-* Análise de sazonalidade
-* Identificação de meses mais fracos
-* Comparação mês a mês
-
----
-
-##  Métricas e Indicadores
-
-###  Faturamento Médio
-
-```sql
-SELECT AVG(Valor_Servico) AS faturamento_medio
-FROM Fato_Lavagens;
-```
-
-###  Desvio Padrão do Faturamento
-
-```sql
-SELECT STDDEV(Valor_Servico) AS desvio_padrao
-FROM Fato_Lavagens;
-```
-
-###  Média de Carros Lavados por Dia (por mês)
-
-```sql
+SQL
 SELECT 
-    Mes,
-    AVG(qtd_dia) AS media_diaria
+    t.Ano, 
+    t.Mes, 
+    COUNT(f.ID_Lavagem) AS total_lavagens, 
+    ROUND(SUM(f.Valor_Pago), 2) AS faturamento_total
+FROM fato_lavagens f
+JOIN dim_tempo t ON f.ID_Tempo = t.ID_Tempo
+GROUP BY t.Ano, t.Mes
+ORDER BY t.Ano, t.Mes;
+2. Qual é a média diária de carros lavados em cada mês?
+
+SQL
+SELECT 
+    Ano,
+    Mes, 
+    ROUND(AVG(qtd_dia), 2) AS media_diaria_carros
 FROM (
     SELECT 
-        ID_Tempo,
-        COUNT(*) AS qtd_dia
-    FROM Fato_Lavagens
-    GROUP BY ID_Tempo
+        t.Ano, t.Mes, t.Data, 
+        COUNT(f.ID_Lavagem) AS qtd_dia
+    FROM fato_lavagens f
+    JOIN dim_tempo t ON f.ID_Tempo = t.ID_Tempo
+    GROUP BY t.Ano, t.Mes, t.Data
 ) sub
-GROUP BY Mes;
-```
+GROUP BY Ano, Mes
+ORDER BY Ano, Mes;
+3. Existe sazonalidade semanal no negócio (quais os dias de maior movimento)?
+(Nota: Dia 0 = Segunda-feira, 6 = Domingo)
 
----
+SQL
+SELECT 
+    t.Dia_da_Semana, 
+    COUNT(f.ID_Lavagem) AS total_lavagens, 
+    ROUND(SUM(f.Valor_Pago), 2) AS faturamento_total
+FROM fato_lavagens f
+JOIN dim_tempo t ON f.ID_Tempo = t.ID_Tempo
+GROUP BY t.Dia_da_Semana
+ORDER BY total_lavagens DESC;
+4. Quais tipos de serviços geram a maior parte da receita?
 
-##  Análises Esperadas
+SQL
+SELECT 
+    s.Tipo_Servico, 
+    COUNT(f.ID_Lavagem) AS qtd_executada, 
+    ROUND(SUM(f.Valor_Pago), 2) AS faturamento_total
+FROM fato_lavagens f
+JOIN dim_servico s ON f.ID_Servico = s.ID_Servico
+GROUP BY s.Tipo_Servico
+ORDER BY faturamento_total DESC;
+5. Qual é o perfil da frota atendida (Categoria do Carro) e seu impacto na receita?
 
-Com esse modelo, será possível responder perguntas como:
+SQL
+SELECT 
+    c.Categoria AS porte_do_carro, 
+    COUNT(f.ID_Lavagem) AS total_lavagens, 
+    ROUND(SUM(f.Valor_Pago), 2) AS faturamento_total
+FROM fato_lavagens f
+JOIN dim_carro c ON f.ID_Carro = c.ID_Carro
+GROUP BY c.Categoria
+ORDER BY faturamento_total DESC;
+Como Executar o Projeto
+Clone este repositório.
 
-* Qual é o faturamento médio mensal?
-* Quais meses apresentam maior variabilidade (instabilidade)?
-* Quais meses têm menor movimento (meses "parados")?
-* Qual a média de carros lavados por dia em cada mês?
-* Existe sazonalidade no negócio?
+Instale as dependências executando: pip install pandas faker sqlalchemy
 
----
+Execute o script mock_data_generator.py para gerar os dados brutos em CSV.
 
-##  Insights de Negócio
+Execute o script etl_pipeline.py para realizar as transformações, criar a dimensão tempo dinamicamente e salvar o modelo dimensional e os Data Marts no banco de dados local lavajato_datamart.db.
 
-A partir das análises, é possível:
+Conecte o banco de dados lavajato_datamart.db à sua ferramenta de visualização (ex: Power BI via ODBC, Metabase, ou DB Browser).
 
-* Identificar períodos de baixa demanda e criar promoções
-* Ajustar equipe conforme o fluxo de clientes
-* Criar campanhas específicas para meses fracos
-* Otimizar o portfólio de serviços
+Tecnologias Utilizadas
+Extração e Transformação (ETL): Python (Pandas, Faker)
 
----
+Armazenamento e Carga: SQLite (via SQLAlchemy)
 
-##  Tecnologias Sugeridas
+Linguagem de Consulta: SQL
 
-* Banco de Dados: PostgreSQL / MySQL / SQL Server
-* ETL: Python (Pandas) ou ferramentas como Airflow
-* Visualização: Power BI / Tableau
-* Armazenamento: Data Warehouse relacional
+Visualização: [Inserir a ferramenta escolhida: Power BI / Metabase / Streamlit]
 
----
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-##  Conclusão
-=======
-## 🚀 Conclusão
->>>>>>> 97ccbaa (geração de dados raw)
-=======
-##  Conclusão
->>>>>>> fb87f61 (gerando os dados raw)
-
-Este projeto fornece uma base sólida para análise de dados em um lava jato, permitindo transformar dados operacionais em decisões estratégicas.
-
-Com a estrutura proposta, o negócio ganha visibilidade sobre seu desempenho e capacidade de agir de forma proativa para melhorar resultados.
-
----
-
-
-o
+Conclusão
+Este projeto fornece uma base sólida para a análise de dados em um lava jato, transformando registros transacionais brutos em decisões estratégicas. Com a estrutura analítica proposta, o negócio ganha visibilidade sobre seu desempenho, facilitando a identificação de períodos de baixa demanda, o ajuste de quadro de funcionários e a otimização do portfólio de serviços.

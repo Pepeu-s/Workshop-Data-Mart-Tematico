@@ -13,6 +13,8 @@ Este projeto tem como objetivo estruturar um ambiente analítico completo para u
 ## Modelagem de Dados
 O projeto utiliza um modelo dimensional inspirado no **Snowflake Schema**, com separação clara entre fatos e dimensões. 
 
+![Modelo StarSchema Lavajato](./modelagem.png)
+
 **Granularidade:** A granularidade da Tabela Fato é de **um registro por serviço executado** (1 linha = 1 serviço realizado em 1 carro, em 1 dia específico).
 
 ### Tabela Fato

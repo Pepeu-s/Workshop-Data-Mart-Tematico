@@ -68,7 +68,7 @@ GROUP BY Ano, Mes
 ORDER BY Ano, Mes;
 ```
 
-**3. Existe sazonalidade semanal no negócio (quais os meses de maior movimento)?**
+**3. Existe sazonalidade Anual no negócio (quais os meses de maior movimento)?**
 ```sql
 SELECT 
     t.Mes, 

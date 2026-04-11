@@ -11,7 +11,7 @@ Este projeto tem como objetivo estruturar um ambiente analítico completo para u
 * Apoiar decisões estratégicas para aumentar a receita e a eficiência operacional.
 
 ## Modelagem de Dados
-O projeto utiliza um modelo dimensional inspirado no **Snowflake Schema**, com separação clara entre fatos e dimensões. 
+O projeto utiliza um modelo dimensional inspirado no **Star Schema**, com separação clara entre fatos e dimensões. 
 
 ![Modelo StarSchema Lavajato](./modelagem.png)
 

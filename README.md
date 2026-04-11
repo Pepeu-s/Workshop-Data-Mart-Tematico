@@ -68,11 +68,10 @@ GROUP BY Ano, Mes
 ORDER BY Ano, Mes;
 ```
 
-**3. Existe sazonalidade semanal no negócio (quais os dias de maior movimento)?**
-*(Nota: Dia 0 = Segunda-feira, 6 = Domingo)*
+**3. Existe sazonalidade semanal no negócio (quais os meses de maior movimento)?**
 ```sql
 SELECT 
-    t.Dia_da_Semana, 
+    t.Mes, 
     COUNT(f.ID_Lavagem) AS total_lavagens, 
     ROUND(SUM(f.Valor_Pago), 2) AS faturamento_total
 FROM fato_lavagens f

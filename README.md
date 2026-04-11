@@ -30,10 +30,10 @@ O projeto utiliza um modelo dimensional inspirado no **Star Schema**, com separa
 O pipeline foi construído em Python (Pandas e SQLAlchemy). Os dados transacionais brutos foram gerados via biblioteca `Faker`. Durante a fase de transformação, a `Dim_Tempo` foi extraída a partir das datas da tabela fato. 
 
 Além do modelo base, o pipeline gera fisicamente no banco de dados (`SQLite`) os seguintes Data Marts agregados para facilitar a visualização:
-1. **dm_financeiro:** Faturamento total, médio e desvio padrão agregados por mês.
-2. **dm_operacional:** Volume de serviços e receita cruzados por tipo de serviço e categoria do veículo.
-3. **dm_temporal:** Médias diárias calculadas mensalmente.
-4. **dm_sazonalidade_semanal:** Volume de lavagens por dia da semana.
+1. **dm_financeiro:** Faturamento total consolidado por ano, mês e tipo de serviço.
+2. **dm_operacional:** Total de lavagens agregadas detalhadamente por data, hora e dia da semana.
+3. **dm_cliente:** Quantidade de lavagens realizadas, cruzadas por mês e categoria do veículo.
+4. **dm_serviços:** Volume de atendimentos e faturamento total agregados por tipo e categoria de serviço.
 
 ## 5 Perguntas de Negócio Resolvidas (Queries SQL)
 

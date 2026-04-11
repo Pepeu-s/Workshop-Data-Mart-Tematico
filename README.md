@@ -106,7 +106,7 @@ ORDER BY faturamento_total DESC;
 ```
 
 ## Como Executar o Projeto
-1. Clone este repositório.
+1. Clone este repositório com python= 3.12 .
 2. Instale as dependências executando: `pip install pandas faker sqlalchemy`
 3. Execute o script `mock_data_generator.py` para gerar os dados brutos em CSV.
 4. Execute o script `etl_pipeline.py` para realizar as transformações, criar a dimensão tempo dinamicamente e salvar o modelo dimensional e os Data Marts no banco de dados local `lavajato_datamart.db`.
